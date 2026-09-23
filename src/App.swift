@@ -2,7 +2,7 @@ import AppKit
 import ApplicationServices
 import Darwin
 
-final class AppDelegate: NSObject, NSApplicationDelegate, NSSharingServiceDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSSharingServiceDelegate, NSWindowDelegate {
     let manager = FileManager.default
     let support = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/Book to Kindle Shortcut")
     let cache = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Caches/Book to Kindle Shortcut")
@@ -50,13 +50,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSSharingServiceDelega
     }
 
     func makeWindow() {
-        window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 440, height: 120), styleMask: [.titled], backing: .buffered, defer: false)
+        window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 440, height: 120), styleMask: [.titled, .closable], backing: .buffered, defer: false)
         window.title = "Book to Kindle"
+        window.delegate = self
         label = NSTextField(wrappingLabelWithString: "Preparing your book…")
         label.frame = NSRect(x: 24, y: 24, width: 392, height: 72)
         window.contentView?.addSubview(label)
         window.center(); window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        if !finished { record("unconfirmed", "The helper was closed before delivery was confirmed.") }
+        NSApp.terminate(nil)
     }
 
     func showSetup() {
@@ -159,8 +165,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSSharingServiceDelega
         AXUIElementSetMessagingTimeout(root, 0.5)
         let nodes = walk(root)
         let dialogs = nodes.filter { [kAXWindowRole, kAXSheetRole, "AXDialog"].contains(string($0, kAXRoleAttribute)) }
+        if let matched = matchedWindow, !dialogs.contains(where: { CFEqual(matched, $0) }),
+           phase == "review" || phase == "sending" {
+            finish("unconfirmed", "The Kindle form was closed before delivery was confirmed. The book remains archived; check Kindle’s library before retrying.")
+            return
+        }
         for dialog in dialogs {
-            let elements = walk(dialog), allText = walk(dialog).flatMap(texts)
+            let elements = walk(dialog)
+            let allText = elements.flatMap(texts)
             if phase == "sending" || phase == "review" {
                 guard let matched = matchedWindow, CFEqual(matched, dialog) else { continue }
                 if SendJob.isSuccess(allText) {

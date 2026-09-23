@@ -33,6 +33,7 @@ Send to Kindle → fill title and author → verify → Send → confirm
 
 4. Finish the macOS setup prompts:
    - Click **Add Shortcut** in Shortcuts. On an update, choose **Replace** rather than keeping a duplicate.
+   - Open the shortcut’s **Details** and enable **Use as Quick Action → Finder** if unchecked. macOS can leave Finder disabled after import, even though the generated shortcut declares it.
    - Enable **Shortcuts → Settings → Advanced → Allow Running Scripts**.
    - Enable **Book to Kindle** in **System Settings → Privacy & Security → Accessibility**.
    - Approve access to your selected files when macOS asks.
@@ -88,7 +89,7 @@ An EPUB’s metadata can be incorrect. The helper cannot infer the correct autho
 
 The shortcut is a small, quoted shell launcher. It has no personal paths, folder bookmarks, or hand-edited sharing actions. The app opens Kindle’s native sharing service directly.
 
-**The remaining clicks are intentional:** macOS controls shortcut import, script execution, Accessibility, file access, and keyboard shortcuts. Setup does not edit the Shortcuts database, grant itself permissions, or replace existing hotkeys. [Apple documents shortcut signing](https://support.apple.com/guide/shortcuts-mac/run-shortcuts-from-the-command-line-apd455c82f02/mac) and [Quick Action keyboard setup](https://support.apple.com/guide/shortcuts-mac/run-a-shortcut-while-working-on-your-mac-apd163eb9f95/mac).
+**The remaining clicks are intentional:** macOS controls shortcut import, script execution, Accessibility, file access, Finder Quick Action registration, and keyboard shortcuts. Setup does not edit the Shortcuts database, grant itself permissions, or replace existing hotkeys. [Apple documents shortcut signing](https://support.apple.com/guide/shortcuts-mac/run-shortcuts-from-the-command-line-apd455c82f02/mac) and [Quick Action keyboard setup](https://support.apple.com/guide/shortcuts-mac/run-a-shortcut-while-working-on-your-mac-apd163eb9f95/mac).
 
 ## Privacy and permissions
 
@@ -107,7 +108,7 @@ git pull --ff-only
 ./install.command
 ```
 
-For a ZIP install, download the new version and run its `install.command`. The installer preserves configuration, stages and verifies the replacement app, keeps the previous app as a local backup, and refuses to replace an unrelated app. If setup is interrupted, rerun it. Each successful upgrade retains a `Previous-*.app` backup; older backups can be removed when no longer needed.
+For a ZIP install, download the new version and run its `install.command`. The installer preserves configuration, stages and verifies the replacement app, keeps the previous app as a local backup, and refuses to replace an unrelated app. If setup is interrupted, rerun it. Each successful upgrade retains a `Previous-*.app` backup in `~/Applications/.Book to Kindle Backups/`; older backups can be removed when no longer needed.
 
 If sending fails or times out, the book remains archived. **Check Kindle’s library before retrying**: a timeout after Send can mean the upload succeeded without a confirmation being observed. Selecting an already archived book retries delivery; it may create another Kindle copy if it was already sent.
 
@@ -124,12 +125,12 @@ Local files:
 
 Result records contain book titles, authors, archive paths, and hashes. They stay on your Mac. Failed or interrupted share copies remain for troubleshooting; when the helper is closed, you can remove its cache folder without affecting archived books.
 
-To uninstall, remove **Book to Kindle** from Shortcuts, move the app to Trash, disable its Accessibility permission, and optionally remove the support/cache folders above. Your archive folder and Kindle library are not touched.
+To uninstall, remove **Book to Kindle** from Shortcuts, move the app to Trash, disable its Accessibility permission, and optionally remove the support/cache folders and `~/Applications/.Book to Kindle Backups/`. Your archive folder and Kindle library are not touched.
 
 ## Troubleshooting
 
 - **“Select exactly one EPUB”**: select one `.epub` in Finder before running the Quick Action. Running from Shortcuts itself offers a file picker.
-- **No Quick Action**: check the shortcut’s Details has **Use as Quick Action → Finder** enabled. The generated definition includes this setting.
+- **No Quick Action**: check the shortcut’s Details has **Use as Quick Action → Finder** enabled. The generated definition declares this setting, but macOS may require enabling it once after import.
 - **Script execution blocked**: enable Allow Running Scripts in Shortcuts’ Advanced settings.
 - **Permission missing after an update**: quit the helper and re-enable **Book to Kindle** in Accessibility. If macOS keeps an obsolete entry, remove it and add the app from `~/Applications` again.
 - **Kindle extension unavailable**: open Kindle, sign in, and check that Send to Kindle appears in macOS sharing extensions. The standalone legacy Send to Kindle app is not the supported target.

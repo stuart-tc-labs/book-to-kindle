@@ -35,6 +35,7 @@ def main():
         print('Sending mode:', config['mode'])
         print('Generated shortcut:', shortcut)
         print('Approve Add Shortcut (or Replace) when Shortcuts opens.')
+        print('In the shortcut’s Details, enable Use as Quick Action → Finder if unchecked.')
         print('Enable Shortcuts → Settings → Advanced → Allow Running Scripts.')
         print('Enable Book to Kindle in Privacy & Security → Accessibility.')
         print('Optional hotkey: Shortcut Details → Add Keyboard Shortcut (suggested Control–Option–K).')

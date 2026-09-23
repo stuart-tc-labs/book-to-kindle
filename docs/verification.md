@@ -17,7 +17,7 @@ Automated tests do not establish that an Amazon upload succeeded. They do not gr
 ## Manual release check
 
 1. Apply setup from a clean checkout with a temporary destination and review mode.
-2. Import the generated shortcut and check Finder and Services Quick Actions.
+2. Import the generated shortcut and check Finder and Services Quick Actions. Enable Finder once if macOS left it unchecked.
 3. Enable required permissions explicitly in macOS.
 4. Select a disposable, valid EPUB with known title/author and run the generated Quick Action.
 5. Confirm original bytes and attributes, cleaned archive name, Yellow tag, and correctly filled Kindle fields.

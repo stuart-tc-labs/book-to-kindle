@@ -170,6 +170,7 @@ def prepare(source, destination, cache):
     original = source.lstat()
     if not stat.S_ISREG(original.st_mode) or source.suffix.lower() != '.epub':
         raise ValueError('Select one regular EPUB file. Symbolic links and other formats are not supported.')
+    source = source.parent.resolve()/source.name
     if original.st_size > MAX_FILE_BYTES:
         raise ValueError('EPUB exceeds the 200 MiB file-size limit.')
     cache.mkdir(parents=True, exist_ok=True, mode=0o700)

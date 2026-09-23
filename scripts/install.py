@@ -52,24 +52,27 @@ def install(bundle_zip, home, destination=None, mode=None, locked=False):
             raise ValueError('Refusing to replace an unrelated Book to Kindle.app.')
         # Stage on the same filesystem as the final app; rename publishes a complete bundle.
         stage = Path(tempfile.mkdtemp(prefix='.book-to-kindle-', dir=str(applications)))
-        backup = support/('Previous-' + uuid.uuid4().hex + '.app')
+        backups = applications/'.Book to Kindle Backups'
+        backups.mkdir(exist_ok=True, mode=0o700)
+        backup = backups/('Previous-' + uuid.uuid4().hex + '.app')
+        config_temp = support/('.config-' + uuid.uuid4().hex + '.tmp')
         try:
             subprocess.run(['/usr/bin/ditto', '-x', '-k', str(bundle_zip), str(stage)], check=True)
             replacement = stage/'Book to Kindle.app'
             if bundle_id(replacement) != BUNDLE_ID:
                 raise ValueError('Unexpected bundle identifier in the build artifact.')
             subprocess.run(['/usr/bin/codesign', '--verify', '--strict', str(replacement)], check=True)
-            config_temp = stage/'config.json'
             config_temp.write_text(json.dumps(config, indent=2) + '\n')
             old_config = config_path.read_bytes() if config_path.exists() else None
             moved_old = False
+            published_new = False
             try:
                 if app.exists():
                     app.rename(backup); moved_old = True
-                replacement.rename(app)
+                replacement.rename(app); published_new = True
                 config_temp.replace(config_path)
             except BaseException:
-                if app.exists():
+                if published_new and app.exists():
                     app.rename(stage/'failed.app')
                 if moved_old:
                     backup.rename(app)
@@ -79,6 +82,7 @@ def install(bundle_zip, home, destination=None, mode=None, locked=False):
                     config_path.write_bytes(old_config)
                 raise
         finally:
+            config_temp.unlink(missing_ok=True)
             shutil.rmtree(stage)
         return app, config
 

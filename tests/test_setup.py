@@ -43,7 +43,7 @@ class InstallerTests(unittest.TestCase):
         self.assertEqual(install.bundle_id(app), install.BUNDLE_ID)
         _, reapplied = install.install(self.bundle, self.home)
         self.assertEqual(config, reapplied)
-        self.assertEqual(len(list(self.support.glob('Previous-*.app'))), 1)
+        self.assertEqual(len(list((self.home/'Applications/.Book to Kindle Backups').glob('Previous-*.app'))), 1)
 
     def test_shared_lock_rejects_another_installer(self):
         with install.installation_lock(self.support):
@@ -62,6 +62,20 @@ class InstallerTests(unittest.TestCase):
             with self.assertRaisesRegex(OSError, 'Injected'):
                 install.install(self.bundle, self.home, '/tmp/Changed')
         self.assertEqual(install.bundle_id(app), install.BUNDLE_ID)
+        self.assertEqual(json.loads((self.support/'config.json').read_text()), before)
+
+    def test_failure_moving_original_never_removes_it(self):
+        app, before = install.install(self.bundle, self.home)
+        original = (app/'Contents/MacOS/BookToKindle').read_bytes()
+        rename = Path.rename
+        def injected(path, target):
+            if path == app and Path(target).name.startswith('Previous-'):
+                raise OSError('Injected failure moving original')
+            return rename(path, target)
+        with patch.object(Path, 'rename', injected):
+            with self.assertRaisesRegex(OSError, 'Injected'):
+                install.install(self.bundle, self.home)
+        self.assertEqual((app/'Contents/MacOS/BookToKindle').read_bytes(), original)
         self.assertEqual(json.loads((self.support/'config.json').read_text()), before)
 
     def test_invalid_config_cannot_replace_app(self):
