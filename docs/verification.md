@@ -36,9 +36,12 @@ The build targets macOS 13+. It uses the Kindle Mac app extension identified as 
 - Setup built and installed the app, signed the generated shortcut, and preserved settings on reapplication.
 - The signed shortcut imported successfully. Finder registration required enabling its checkbox once.
 - On macOS 26.6 with Kindle 7.59, the packaged app opened the native share form and filled the correct title and author in review mode. The archived test EPUB retained its original SHA-256 and received the Yellow tag.
-- The generated shortcut launched the installed helper. A later rebuild invalidated its earlier Accessibility grant; the complete automatic upload through the packaged Quick Action remains unverified pending a renewed grant.
+- On September 23, 2026, the generated Finder Quick Action completed the automatic flow with the installed release helper: moved the test EPUB into the configured archive, preserved its original SHA-256, applied Yellow, filled title/author, and sent it without manual form edits or a manual Send click.
+- The helper recorded `sent` only after detecting Kindle’s `File sent` confirmation. Kindle library search subsequently showed exactly one result: **Book to Kindle Setup Check**, author **Book to Kindle**.
+- The original source was removed after archiving; the confirmed job’s temporary share copy was cleaned up, and its local result record persisted.
+- The final rebuild invalidated the earlier Accessibility grant. Toggling the old entry was insufficient; removing it and adding the installed app from `~/Applications/Book to Kindle.app` restored access. No helper rebuild was needed for this repair.
 
-The earlier personal workflow completed an automatic upload on this Mac. That does not substitute for the remaining packaged-workflow check. Release notes will record subsequent validation.
+The full-flow validation was completed after the initial source ZIP was packaged. The code in that ZIP was the code tested; its earlier verification note is superseded by this document and the updated GitHub release notes.
 
 ## Review changes
 

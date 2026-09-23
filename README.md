@@ -132,7 +132,7 @@ To uninstall, remove **Book to Kindle** from Shortcuts, move the app to Trash, d
 - **“Select exactly one EPUB”**: select one `.epub` in Finder before running the Quick Action. Running from Shortcuts itself offers a file picker.
 - **No Quick Action**: check the shortcut’s Details has **Use as Quick Action → Finder** enabled. The generated definition declares this setting, but macOS may require enabling it once after import.
 - **Script execution blocked**: enable Allow Running Scripts in Shortcuts’ Advanced settings.
-- **Permission missing after an update**: quit the helper and re-enable **Book to Kindle** in Accessibility. If macOS keeps an obsolete entry, remove it and add the app from `~/Applications` again.
+- **Permission missing after an update**: quit the helper and re-enable **Book to Kindle** in Accessibility. If the switch is on but the helper still reports missing permission, select **Book to Kindle**, click **−**, then click **+** and add `~/Applications/Book to Kindle.app` again. This was required after a rebuild during release validation.
 - **Kindle extension unavailable**: open Kindle, sign in, and check that Send to Kindle appears in macOS sharing extensions. The standalone legacy Send to Kindle app is not the supported target.
 - **Unexpected form or language**: this release recognizes English Kindle labels. It stops instead of guessing which controls to press.
 - **Missing title/author**: correct the EPUB metadata first; the source is left in place.
