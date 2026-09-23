@@ -1,0 +1,15 @@
+import Foundation
+let job = SendJob(id: "test", title: "Book: A Story", author: "Jane Doe", expectedFilename: "Book [btk-unique].epub", archive: "/archive/book.epub", send: "/cache/book.epub", sha256: "test")
+assert(job.matches(fields: [job.expectedFilename, "Someone else"]))
+assert(!job.matches(fields: ["Wrong book.epub", "Someone else"]))
+assert(!job.matches(fields: [job.expectedFilename]))
+assert(!job.verified(fields: [job.title, "Someone else"]))
+assert(!job.verified(fields: [job.title, job.author, "Unexpected field"]))
+assert(job.verified(fields: [job.title, job.author]))
+assert(!SendJob.isSuccess(["Sending", "Your file will be available soon"]))
+assert(SendJob.isSuccess(["File sent"]))
+let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+try Data(#"{"destination":"relative/path","mode":"auto"}"#.utf8).write(to: url)
+do { _ = try Configuration.load(from: url); fatalError("Relative destination accepted") } catch {}
+try FileManager.default.removeItem(at: url)
+print("9 Swift field/identity/confirmation/configuration checks passed")
