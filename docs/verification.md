@@ -29,7 +29,16 @@ Automated tests do not establish that an Amazon upload succeeded. They do not gr
 
 The build targets macOS 13+. It uses the Kindle Mac app extension identified as `com.amazon.Lassen.SendToKindleExtension` and English interface labels. Other Kindle apps, operating systems, and localized interfaces are not supported by this release. Compatibility with every macOS 13+ release is not implied by the deployment target.
 
-The starting personal workflow was verified on macOS 26.6 with Kindle 7.59. The packaged native-host workflow has separate release validation; see the GitHub release notes for its current test status.
+### Version 0.1.0 release evidence
+
+- Local verification: 19 Python tests and 9 Swift model checks passed.
+- The macOS GitHub Actions build and tests passed.
+- Setup built and installed the app, signed the generated shortcut, and preserved settings on reapplication.
+- The signed shortcut imported successfully. Finder registration required enabling its checkbox once.
+- On macOS 26.6 with Kindle 7.59, the packaged app opened the native share form and filled the correct title and author in review mode. The archived test EPUB retained its original SHA-256 and received the Yellow tag.
+- The generated shortcut launched the installed helper. A later rebuild invalidated its earlier Accessibility grant; the complete automatic upload through the packaged Quick Action remains unverified pending a renewed grant.
+
+The earlier personal workflow completed an automatic upload on this Mac. That does not substitute for the remaining packaged-workflow check. Release notes will record subsequent validation.
 
 ## Review changes
 
